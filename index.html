@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Moody Chiropractic — Health Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #2D7D5A;
+    --green-light: #E8F5EF;
+    --green-mid: #3A9E72;
+    --blue: #1B4F8A;
+    --blue-light: #E8F0FA;
+    --blue-mid: #2563B0;
+    --text: #1a2332;
+    --muted: #6b7a8d;
+    --border: #dde3ec;
+    --bg: #f5f8fc;
+    --white: #ffffff;
+    --radius: 12px;
+    --btn-a: #2D7D5A;
+    --btn-b: #1B4F8A;
+    --btn-f: #c0392b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    width: 100%;
+    background: #0d1117;
+    border-bottom: 1.5px solid #222;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .logo-img { height: 48px; width: auto; }
+
+  /* FORM CARD */
+  .form-card {
+    width: 100%;
+    max-width: 680px;
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin: 16px auto;
+    padding: 20px 24px;
+  }
+
+  /* GRID ROWS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+  /* FIELDS */
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .field input, .field textarea {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--green-mid);
+    background: var(--green-light);
+  }
+  .field textarea { resize: none; height: 60px; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1.5px solid var(--border);
+    margin: 16px 0;
+  }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+  }
+
+  /* SYMPTOM GRID */
+  .symptom-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .chip {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 4px;
+    font-size: 10px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--muted);
+    background: var(--white);
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.3;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .chip.active {
+    background: var(--green-light);
+    border-color: var(--green-mid);
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ACTION BUTTONS */
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .action-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 14px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.12s, opacity 0.12s;
+  }
+  .action-btn:active { transform: scale(0.97); opacity: 0.9; }
+  .action-btn .btn-letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .action-btn .btn-desc { display: none; }
+
+  .btn-a { background: rgba(150,150,150,0.15); color: #555; border: 1.5px solid #ccc; }
+  .btn-b { background: rgba(150,150,150,0.15); color: #555; border: 1.5px solid #ccc; }
+  .btn-f { background: rgba(150,150,150,0.15); color: #555; border: 1.5px solid #ccc; }
+
+  /* STATUS TOAST */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: transform 0.3s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { background: var(--green); }
+  .toast.error { background: var(--btn-f); }
+
+  /* OVERLAY */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .overlay.show { display: flex; }
+  .overlay-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 32px;
+    max-width: 340px;
+    width: 90%;
+    text-align: center;
+  }
+  .overlay-icon { font-size: 40px; margin-bottom: 12px; }
+  .overlay-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 8px; }
+  .overlay-sub { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+  .overlay-btn {
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* REQUIRED STAR */
+  .req { color: #e74c3c; margin-left: 2px; }
+
+  @media (max-width: 600px) {
+    .form-card { margin: 10px; padding: 16px; }
+    .symptom-grid { grid-template-columns: repeat(4, 1fr); }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img class="logo-img" src="data:image/png;base64,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" alt="Awaken Chiropractic">
+</div>
+
+<div class="form-card">
+
+  <div class="grid-2">
+    <div class="field">
+      <label>Full Name <span class="req">*</span></label>
+      <input type="text" id="fullname" placeholder="Jane Smith" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Age <span class="req">*</span></label>
+      <input type="number" id="age" placeholder="34" min="1" max="120" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="field">
+      <label>Email <span class="req">*</span></label>
+      <input type="email" id="email" placeholder="jane@email.com" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Phone <span class="req">*</span></label>
+      <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="field">
+      <label>City / State <span class="req">*</span></label>
+      <input type="text" id="citystate" placeholder="Clearwater, FL" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Occupation <span class="req">*</span></label>
+      <input type="text" id="occupation" placeholder="Nurse" autocomplete="off">
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="field" style="margin-bottom: 14px;">
+    <label>Biggest Health Concern <span class="req">*</span></label>
+    <textarea id="concern" placeholder="e.g. lower back pain, headaches, stress..."></textarea>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Check any symptoms that apply</div>
+  <div class="symptom-grid" id="symptomGrid">
+    <button type="button" class="chip" data-symptom="Arthritis">Arthritis</button>
+    <button type="button" class="chip" data-symptom="Low Back Pain">Low Back Pain</button>
+    <button type="button" class="chip" data-symptom="Concentration Issues">Concentration Issues</button>
+    <button type="button" class="chip" data-symptom="Migraines">Migraines</button>
+    <button type="button" class="chip" data-symptom="Depression">Depression</button>
+    <button type="button" class="chip" data-symptom="Neck Pain">Neck Pain</button>
+    <button type="button" class="chip" data-symptom="Digestive Problems">Digestive Problems</button>
+    <button type="button" class="chip" data-symptom="Numbness/Tingling">Numbness/ Tingling</button>
+    <button type="button" class="chip" data-symptom="Headaches">Headaches</button>
+    <button type="button" class="chip" data-symptom="Sciatica">Sciatica</button>
+    <button type="button" class="chip" data-symptom="Heartburn">Heartburn</button>
+    <button type="button" class="chip" data-symptom="Shoulder Pain">Shoulder Pain</button>
+    <button type="button" class="chip" data-symptom="Insomnia">Insomnia</button>
+    <button type="button" class="chip" data-symptom="Stress">Stress</button>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Staff action</div>
+
+  <div class="action-row">
+    <button type="button" class="action-btn btn-a" id="btnA">
+      <span class="btn-letter">A</span>
+      <span class="btn-desc">Book now — open booking page</span>
+    </button>
+    <button type="button" class="action-btn btn-b" id="btnB">
+      <span class="btn-letter">B</span>
+      <span class="btn-desc">Follow up — save to sheet</span>
+    </button>
+    <button type="button" class="action-btn btn-f" id="btnF">
+      <span class="btn-letter">F</span>
+      <span class="btn-desc">Discard — clear form</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- Success Overlay -->
+<div class="overlay" id="overlayA">
+  <div class="overlay-card">
+    <div class="overlay-icon">📅</div>
+    <div class="overlay-title">Opening Booking Page</div>
+    <div class="overlay-sub">Great news! Taking them to the appointment booking page now.</div>
+    <button class="overlay-btn" id="overlayAClose">Done — Reset Form</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayB">
+  <div class="overlay-card">
+    <div class="overlay-icon">✅</div>
+    <div class="overlay-title">Saved for Follow-Up</div>
+    <div class="overlay-sub" id="overlayBMsg">Entry saved to your Google Sheet. You'll follow up with them soon!</div>
+    <button class="overlay-btn" id="overlayBClose">Done — Reset Form</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayF">
+  <div class="overlay-card">
+    <div class="overlay-icon">🗑️</div>
+    <div class="overlay-title">Discard this entry?</div>
+    <div class="overlay-sub">This will clear the form without saving anything.</div>
+    <div style="display:flex; gap:10px; margin-top:4px;">
+      <button class="overlay-btn" style="background:#e74c3c;" id="overlayFConfirm">Yes, discard</button>
+      <button class="overlay-btn" style="background:#888;" id="overlayFCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const SHEETDB_URL = 'https://sheetdb.io/api/v1/oyda3yv13dhu1';
+  const BOOKING_URL = 'https://awakenomaha.com/book-an-appointment/';
+
+  function getFormData() {
+    return {
+      'Full Name': document.getElementById('fullname').value.trim(),
+      'Phone': document.getElementById('phone').value.trim(),
+      'Email': document.getElementById('email').value.trim(),
+      'Age': document.getElementById('age').value.trim(),
+      'City/State': document.getElementById('citystate').value.trim(),
+      'Occupation': document.getElementById('occupation').value.trim(),
+      'Health Concern': document.getElementById('concern').value.trim(),
+      'Symptoms': Array.from(document.querySelectorAll('.chip.active')).map(c => c.dataset.symptom).join(', '),
+      'Event': '',
+      'Appointment Made': '',
+      'Appointment Date': '',
+      'Appointment Time': '',
+      'Screener': '',
+      'Paid': '',
+      'Payment Method': ''
+    };
+  }
+
+  function validateForm() {
+    const d = getFormData();
+    const required = ['Full Name','Phone','Email','Age','City/State','Occupation','Health Concern'];
+    for (const f of required) {
+      if (!d[f]) return f;
+    }
+    return null;
+  }
+
+  function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => { t.className = 'toast'; }, 3000);
+  }
+
+  function resetForm() {
+    document.getElementById('fullname').value = '';
+    document.getElementById('age').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('citystate').value = '';
+    document.getElementById('occupation').value = '';
+    document.getElementById('concern').value = '';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  }
+
+  function closeAllOverlays() {
+    document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
+  }
+
+  async function saveToSheet(data, appointmentMade) {
+    data['Appointment Made'] = appointmentMade;
+    if (SHEETDB_URL === 'YOUR_SHEETDB_URL_HERE') {
+      console.log('SheetDB not configured yet. Data:', data);
+      return { ok: true, offline: true };
+    }
+    try {
+      const resp = await fetch(SHEETDB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data })
+      });
+      return { ok: resp.ok };
+    } catch(e) {
+      const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      queue.push(data);
+      localStorage.setItem('offlineQueue', JSON.stringify(queue));
+      return { ok: true, offline: true };
+    }
+  }
+
+  async function flushOfflineQueue() {
+    if (SHEETDB_URL === 'YOUR_SHEETDB_URL_HERE') return;
+    const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+    if (!queue.length) return;
+    const remaining = [];
+    for (const item of queue) {
+      try {
+        const resp = await fetch(SHEETDB_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: item })
+        });
+        if (!resp.ok) remaining.push(item);
+      } catch { remaining.push(item); }
+    }
+    localStorage.setItem('offlineQueue', JSON.stringify(remaining));
+    if (remaining.length < queue.length) showToast(`Synced ${queue.length - remaining.length} offline entries`, 'success');
+  }
+
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('active'));
+  });
+
+  document.getElementById('btnA').addEventListener('click', async () => {
+    const missing = validateForm();
+    if (missing) { showToast('Please fill in: ' + missing, 'error'); return; }
+    const data = getFormData();
+    await saveToSheet(data, 'Yes');
+    document.getElementById('overlayA').classList.add('show');
+    window.open(BOOKING_URL, '_blank');
+  });
+
+  document.getElementById('btnB').addEventListener('click', async () => {
+    const missing = validateForm();
+    if (missing) { showToast('Please fill in: ' + missing, 'error'); return; }
+    const data = getFormData();
+    const result = await saveToSheet(data, 'No');
+    const msg = result.offline
+      ? 'Saved offline — will sync when connected.'
+      : 'Saved to your follow-up sheet!';
+    document.getElementById('overlayBMsg').textContent = msg;
+    document.getElementById('overlayB').classList.add('show');
+  });
+
+  document.getElementById('btnF').addEventListener('click', () => {
+    document.getElementById('overlayF').classList.add('show');
+  });
+
+  document.getElementById('overlayAClose').addEventListener('click', () => { closeAllOverlays(); resetForm(); });
+  document.getElementById('overlayBClose').addEventListener('click', () => { closeAllOverlays(); resetForm(); });
+  document.getElementById('overlayFConfirm').addEventListener('click', () => { closeAllOverlays(); resetForm(); });
+  document.getElementById('overlayFCancel').addEventListener('click', () => closeAllOverlays());
+
+  window.addEventListener('online', flushOfflineQueue);
+  flushOfflineQueue();
+</script>
+</body>
+</html>
